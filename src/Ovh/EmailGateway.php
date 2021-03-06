@@ -51,17 +51,17 @@ class EmailGateway implements \Nettools\SMS\SMSGateway {
 	 * @param string $msg 
 	 * @param string $sender
 	 * @param string[] $to Array of recipients, numbers in international format +xxyyyyyyyyyyyyy (ex. +33612345678)
-	 * @param string $nostop 
+	 * @param bool $transactional True if message sent is transactional ; otherwise i's promotional)
 	 * @return int Returns the number of messages sent, usually the number of values of $to parameter (a multi-sms message count as 1 message)
 	 * @throws \Nettools\SMS\SMSException
 	 */
-	function send($msg, $sender, array $to, $nostop = true)
+	function send($msg, $sender, array $to, $transactional = true)
 	{
 		// prepare text/plain part
 		$email = \Nettools\Mailing\Mailer::createText($msg);
 		
 		$subject = 'Account=' . $this->config->service . ':Login=' . $this->config->login . ':Password=' . $this->config->password;
-		$subject .= ':From=' . $sender . ':NoStop=' . ($nostop ? '1':'0') . ':To=' . implode(',', $to);
+		$subject .= ':From=' . $sender . ':NoStop=' . ($transactional ? '1':'0') . ':To=' . implode(',', $to);
 
 		if ( $ret = $this->mailer->sendmail($email, $this->config->emailSender, self::EMAIL, $subject, true) )
 			throw new SMSException('Error when sending SMS through OVH email gateway : ' . $ret);

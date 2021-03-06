@@ -48,14 +48,14 @@ class HttpGateway implements \Nettools\SMS\SMSGateway {
 	 * @param string $msg 
 	 * @param string $sender
 	 * @param string[] $to Array of recipients, numbers in international format 00xxyyyyyyyyyyyyy (ex. 0033612345678)
-	 * @param string $nostop 
+	 * @param bool $transactional True if message sent is transactional ; otherwise i's promotional)
 	 * @return int Returns the number of messages sent, usually the number of values of $to parameter (a multi-sms message count as 1 message)
 	 * @throws \Nettools\SMS\SMSException
 	 */
-	function send($msg, $sender, array $to, $nostop = true)
+	function send($msg, $sender, array $to, $transactional = true)
 	{
 		$url = self::URL . '?&account=' . $this->config->service . '&login=' . $this->config->login . '&password=' . $this->config->password . '&contentType=text/json';
-		$rq = $url . '&from=' . urlencode($sender) . '&noStop=' . ($nostop ? '1':'0') . '&to=' . implode(',', $to) . '&message=' . urlencode($msg);
+		$rq = $url . '&from=' . urlencode($sender) . '&noStop=' . ($transactional ? '1':'0') . '&to=' . implode(',', $to) . '&message=' . urlencode($msg);
 		$ret = file_get_contents($rq);
 		
 		
