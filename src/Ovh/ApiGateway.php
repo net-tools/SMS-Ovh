@@ -26,6 +26,8 @@ class ApiGateway implements \Nettools\SMS\SMSGateway {
 	 *
 	 * $config must have values for :
 	 * - service
+	 * - downloadCsvUrl
+	 * - localCsvPath
 	 */
 	public function __construct(\Ovh\Api $api, AbstractConfig $config)
 	{
@@ -34,13 +36,14 @@ class ApiGateway implements \Nettools\SMS\SMSGateway {
 	}
 	
 	
+	
 	/**
 	 * Send SMS to several recipients
 	 *
 	 * @param string $msg 
 	 * @param string $sender
 	 * @param string[] $to Array of recipients, numbers in international format +xxyyyyyyyyyyyyy (ex. +33612345678)
-	 * @param bool $transactional True if message sent is transactional ; otherwise i's promotional)
+	 * @param bool $transactional True if message sent is transactional ; otherwise it's promotional)
 	 * @return int Returns the number of messages sent, usually the number of values of $to parameter (a multi-sms message count as 1 message)
 	 */
 	function send($msg, $sender, array $to, $transactional = true)
@@ -54,6 +57,54 @@ class ApiGateway implements \Nettools\SMS\SMSGateway {
 			));
 
 		return count($ret['ids']);
+	}
+	
+	
+	
+	/**
+	 * Send SMS to a lot of recipients (this is more optimized that calling `send` with a big array of recipients)
+	 *
+	 * @param string $msg 
+	 * @param string $sender
+	 * @param string[] $to Big array of recipients, numbers in international format +xxyyyyyyyyyyyyy (ex. +33612345678)
+	 * @param bool $transactional True if message sent is transactional ; otherwise it's promotional)
+	 * @return int Returns the number of SMS sent (a multi-sms message count as as many message)
+	 */
+	function bulkSend($msg, $sender, array $to, $transactional = true)
+	{
+		// creating csv file to be downloaded by sms gateway later
+		$file = 'sms-csv.csv';
+		$f = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . $this->config->localCsvPath . '/' . $file, 'w');
+		fwrite($f, "Number\n");
+		fwrite($f, implode("\n", $to));
+		fclose($f);	
+		
+		// calling method to send from http url
+		return $this->bulkSendFromHttp($msg, $sender, $this->config->downloadCsvUrl . '/' . $file, $transactional);
+	}
+	
+	
+	
+	/**
+	 * Send SMS to a lot of recipients by downloading a CSV file
+	 *
+	 * @param string $msg 
+	 * @param string $sender
+	 * @param string $url Url of CSV file with recipients, numbers in international format +xxyyyyyyyyyyyyy (ex. +33612345678), first row is column headers (1 column title 'Number')
+	 * @param bool $transactional True if message sent is transactional ; otherwise it's promotional)
+	 * @return int Returns the number of SMS sent (a multi-sms message count as as many message)
+	 */
+	function bulkSendFromHttp($msg, $sender, $url, $transactional = true)
+	{
+		$service = $this->config->service;
+		$ret = $this->api->post("/sms/$service/jobs", array(
+				'message' 				=> $msg,
+				'noStopClause'			=> $transactional,
+				'sender'				=> $sender,
+				'receiversDocumentUrl'	=> $url
+			));
+
+		return $ret['totalCreditsRemoved'];
 	}
 }
 
