@@ -26,8 +26,9 @@ class ApiGateway implements \Nettools\SMS\SMSGateway {
 	 *
 	 * $config must have values for :
 	 * - service
-	 * - downloadCsvUrl
-	 * - localCsvPath
+	 * - downloadCsvUrl : url (path) to download csv file
+	 * - localCsvPath : path (relative to documentRoot config value) to csv file to be created
+	 * - documentRoot : server path to www document root
 	 */
 	public function __construct(\Ovh\Api $api, AbstractConfig $config)
 	{
@@ -74,7 +75,7 @@ class ApiGateway implements \Nettools\SMS\SMSGateway {
 	{
 		// creating csv file to be downloaded by sms gateway later
 		$file = 'sms-csv.csv';
-		$f = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . $this->config->localCsvPath . '/' . $file, 'w');
+		$f = fopen($this->config->documentRoot . '/' . $this->config->localCsvPath . '/' . $file, 'w');
 		fwrite($f, "Number\n");
 		fwrite($f, implode("\n", $to));
 		fclose($f);	
