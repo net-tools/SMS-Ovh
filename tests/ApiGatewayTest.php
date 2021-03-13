@@ -34,8 +34,8 @@ class ApiGatewayTest extends \PHPUnit\Framework\TestCase
     public function testGatewayBulkSend()
     {
 		$vfs = vfsStream::setup('root');
+		mkdir($vfs->url() . '/path');
 		
-
 		
 		$config = new \Nettools\Core\Misc\ObjectConfig((object)[
 				'service' 			=> 'my_service',
