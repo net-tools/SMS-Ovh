@@ -17,7 +17,7 @@ class ApiGatewayTest extends \PHPUnit\Framework\TestCase
 		];
 		
         $client = $this->createMock(\Ovh\Api::class);
-		$client->method('post')->with($this->equalTo('/sms/my_service/jobs'), $this->equalTo($params))->willReturn(2);
+		$client->method('post')->with($this->equalTo('/sms/my_service/jobs'), $this->equalTo($params))->willReturn(['ids' => [1000,2000]]);
 		
 		
 		$g = new \Nettools\SMS\Ovh\ApiGateway($client, $config);
@@ -39,7 +39,7 @@ class ApiGatewayTest extends \PHPUnit\Framework\TestCase
 		];
 		
         $client = $this->createMock(\Ovh\Api::class);
-		$client->method('post')->with($this->equalTo('/sms/my_service/jobs'), $this->equalTo($params))->willReturn(1);
+		$client->method('post')->with($this->equalTo('/sms/my_service/jobs'), $this->equalTo($params))->willReturn(['totalCreditsRemoved'=>1]);
 		
 		
 		$g = new \Nettools\SMS\Ovh\ApiGateway($client, $config);
