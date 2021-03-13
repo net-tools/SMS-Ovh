@@ -16,7 +16,7 @@ class EmailGatewayTest extends \PHPUnit\Framework\TestCase
 			]);
 		
 		
-		$mailer = new \Nettools\Mailing\Mailer(\Nettools\Mailing\MailSenders\Virtual_MailSender::class);
+		$mailer = new \Nettools\Mailing\Mailer(\Nettools\Mailing\MailSender::VIRTUAL);
 		
 		$g = new \Nettools\SMS\Ovh\EmailGateway($mailer, $config);
 		$r = $g->send('my sms', 'TESTSENDER', ['+33601020304', '+33605060708'], true);
