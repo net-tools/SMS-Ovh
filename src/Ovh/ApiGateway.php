@@ -17,6 +17,9 @@ class ApiGateway implements \Nettools\SMS\SMSGateway {
 	protected $config;
 	
 	
+	const CSV_FILE = 'sms-csv.csv';
+	
+	
 	
 	/**
 	 * Constructor
@@ -74,7 +77,7 @@ class ApiGateway implements \Nettools\SMS\SMSGateway {
 	function bulkSend($msg, $sender, array $to, $transactional = true)
 	{
 		// creating csv file to be downloaded by sms gateway later
-		$file = 'sms-csv.csv';
+		$file = self::CSV_FILE;
 		$f = fopen($this->config->documentRoot . '/' . $this->config->localCsvPath . '/' . $file, 'w');
 		fwrite($f, "Number\n");
 		fwrite($f, implode("\n", $to));

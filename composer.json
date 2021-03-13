@@ -13,6 +13,11 @@
 		"net-tools/sms":"^1.0.0"
     },
 	
+    "require-dev" : {
+        "phpunit/phpunit":"^9.0.0",
+        "mikey179/vfsstream": "^1.0.0"
+	},
+	
 	"autoload": {
 		"psr-4": {
 			"Nettools\\SMS\\": "src/"
