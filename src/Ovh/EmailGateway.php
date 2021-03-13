@@ -63,7 +63,7 @@ class EmailGateway implements \Nettools\SMS\SMSGateway {
 		$subject = 'Account=' . $this->config->service . ':Login=' . $this->config->login . ':Password=' . $this->config->password;
 		$subject .= ':From=' . $sender . ':NoStop=' . ($transactional ? '1':'0') . ':To=' . implode(',', $to);
 
-		if ( $ret = $this->mailer->sendmail($email, $this->config->emailSender, self::EMAIL, $subject, true) )
+		if ( $ret = $this->mailer->sendmail($email, $this->config->emailSender, self::EMAIL, $subject) )
 			throw new SMSException('Error when sending SMS through OVH email gateway : ' . $ret);
 		else
 			return count($to);
@@ -82,7 +82,11 @@ class EmailGateway implements \Nettools\SMS\SMSGateway {
 	 */
 	function bulkSend($msg, $sender, array $to, $transactional = true)
 	{
-		return $this->send($msg, $sender, $to, $transactional);
+		// envoyer par paquets de 10 (longueur max du sujet)
+		if ( count($to) <= 10 )
+			return $this->send($msg, $sender, $to, $transactional);
+		else
+			return $this->bulkSend($msg, $sender, array_slice($to, 0, 10), $transactional) + $this->bulkSend($msg, $sender, array_slice($to, 10), $transactional);
 	}
 	
 	
