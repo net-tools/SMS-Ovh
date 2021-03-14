@@ -61,6 +61,18 @@ class HttpGateway extends OldGateway {
 	
 	
 	/**
+	 * Create instance and instantiate a GuzzleHttp client
+	 *
+	 * @param \Nettools\Misc\AbstractConfig $config Config object, see constructor doc
+	 */
+	static function create(AbstractConfig $config)
+	{
+		return new HttpGateway(new \GuzzleHttp\Client(), $config);
+	}
+	
+	
+	
+	/**
 	 * Get batch size for bulkSend
 	 *
 	 * @return int
