@@ -64,6 +64,7 @@ class HttpGateway extends OldGateway {
 	 * Create instance and instantiate a GuzzleHttp client
 	 *
 	 * @param \Nettools\Misc\AbstractConfig $config Config object, see constructor doc
+	 * @return \Nettools\SMS\Ovh\HttpGateway
 	 */
 	static function create(AbstractConfig $config)
 	{
