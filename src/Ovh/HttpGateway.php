@@ -16,6 +16,7 @@ use \Nettools\SMS\SMSException;
 class HttpGateway extends OldGateway {
 
 	protected $config;
+	protected $http;
 	
 	
 	/**
@@ -43,6 +44,7 @@ class HttpGateway extends OldGateway {
 	/**
 	 * Constructor
 	 *
+	 * @param \GuzzleHttp\Client $http Guzzle HTTP interface to send request through
 	 * @param \Nettools\Misc\AbstractConfig $config Config object
 	 *
 	 * $config must have values for :
@@ -50,8 +52,9 @@ class HttpGateway extends OldGateway {
 	 * - login : ovh sms user
 	 * - password : ovh sms password
 	 */
-	public function __construct(AbstractConfig $config)
+	public function __construct(\GuzzleHttp\Client $http, AbstractConfig $config)
 	{
+		$this->http = $http;
 		$this->config = $config;
 	}
 	
@@ -81,19 +84,34 @@ class HttpGateway extends OldGateway {
 	 */
 	function send($msg, $sender, array $to, $transactional = true)
 	{
-		$url = self::URL . '?&account=' . $this->config->service . '&login=' . $this->config->login . '&password=' . $this->config->password . '&contentType=text/json';
-		$rq = $url . '&from=' . urlencode($sender) . '&noStop=' . ($transactional ? '1':'0') . '&to=' . implode(',', $to) . '&message=' . urlencode($msg);
-		$ret = file_get_contents($rq);
+		// prepare url
+		$response = $this->http->request('GET', self::URL, 
+						 	[ 
+								'query' => [
+									'account'		=> $this->config->service,
+									'login'			=> $this->config->login,
+									'password'		=> $this->config->password,
+									'contentType'	=> 'text/json',
+									'from'			=> $sender,
+									'noStop'		=> $transactional ? '1':'0',
+									'to'			=> implode(',', $to),
+									'message'		=> $msg
+								]
+							]);
+		
+		if ( $response->getStatusCode() != 200 )
+			throw new SMSException("HTTP error " . $response->getStatusCode() . ' ' . $response->getReasonPhrase() . " when sending SMS");
 		
 		
-		// decode http response
-		if ( $json = json_decode($ret) )
+		// decoding Ovh response
+		$body = (string)($response->getBody());
+		if ( $json = json_decode($body) )
 			if ( ($json->status >= 100) && ($json->status < 200) )
 				return count($json->smsIds);
 			else
 				throw new SMSException("Error {$json->status} when sending SMS : " . $json->message);
 		else
-			return "Unknown error when sending SMS : $ret";
+			return "Unknown error when sending SMS ; response is '$body'";
 	}
 }
 

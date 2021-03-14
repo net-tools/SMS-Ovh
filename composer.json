@@ -10,7 +10,8 @@
 		"net-tools/core": "^1.0.0",
 		"net-tools/mailing":"^1.0.0",
 		"ovh/ovh":"^3.0.0",
-		"net-tools/sms":"^1.0.0"
+		"net-tools/sms":"^1.0.0",
+		"guzzlehttp/guzzle":"^7.0.0"
     },
 	
     "require-dev" : {
