@@ -15,13 +15,41 @@ class HttpGatewayTest extends \PHPUnit\Framework\TestCase
 			]);
 		
 		
-		/*$mailer = new \Nettools\Mailing\Mailer(\Nettools\Mailing\MailSender::VIRTUAL);
+		/*{"status":100,"smsIds":["290079169"],"creditLeft":"397.40"}*/
 		
-		$g = new \Nettools\SMS\Ovh\EmailGateway($mailer, $config);
+		$stub_guzzle_response = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
+		$stub_guzzle_response->method('getStatusCode')->willReturn(200);
+		$stub_guzzle_response->method('getBody')->willReturn('{"status":100,"smsIds":["290079169"],"creditLeft":"397.40"}');
+				
+		// creating stub for guzzle client ; any of the request (GET, POST, PUT, DELETE) will return the guzzle response
+		$stub_guzzle = $this->createMock(\GuzzleHttp\Client::class);
+		
+		// asserting that method Request is called with the right parameters, in particular, the options array being merged with default timeout options
+		$stub_guzzle->expects($this->once())->method('request')->with(
+						$this->equalTo('get'), 
+						$this->equalTo(\Nettools\SMS\Ovh\HttpGateway::URL), 
+						$this->equalTo(
+								array(
+									'query' => [
+										'account'		=> 'my_service',
+										'login'			=> 'my_login',
+										'password'		=> 'my_pwd',
+										'contentType'	=> 'text/json',
+										'from'			=> 'TESTSENDER',
+										'noStop'		=> '1',
+										'to'			=> '+33601020304,+33605060708',
+										'message'		=> 'my sms'
+									]
+								)
+							)
+					)
+					->willReturn($stub_guzzle_response);
+		
+		$client = new \Nettools\SMS\Ovh\HttpGateway($stub_guzzle, $config);
 		$r = $g->send('my sms', 'TESTSENDER', ['+33601020304', '+33605060708'], true);
 		$this->assertEquals(2, $r);
 		
-		$m = $mailer->getMailSender()->getSent();
+/*		$m = $mailer->getMailSender()->getSent();
 		$this->assertEquals(1, count($m));
 		
 		$subject = 'Subject: Account=my_service:Login=my_login:Password=my_pwd:From=TESTSENDER:NoStop=1:To=+33601020304,+33605060708';
