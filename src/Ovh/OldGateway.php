@@ -35,7 +35,7 @@ abstract class OldGateway implements \Nettools\SMS\SMSGateway {
 	 */
 	function bulkSend($msg, $sender, array $to, $transactional = true)
 	{
-		// envoyer par paquets de 10 (longueur max du sujet)
+		// send by batch
 		if ( count($to) <= $this->getBatchSize() )
 			return $this->send($msg, $sender, $to, $transactional);
 		else

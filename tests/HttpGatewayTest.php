@@ -19,7 +19,7 @@ class HttpGatewayTest extends \PHPUnit\Framework\TestCase
 		
 		$stub_guzzle_response = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
 		$stub_guzzle_response->method('getStatusCode')->willReturn(200);
-		$stub_guzzle_response->method('getBody')->willReturn('{"status":100,"smsIds":["290079169"],"creditLeft":"397.40"}');
+		$stub_guzzle_response->method('getBody')->willReturn('{"status":100,"smsIds":["290079169","290079170"],"creditLeft":"397.40"}');
 				
 		// creating stub for guzzle client ; any of the request (GET, POST, PUT, DELETE) will return the guzzle response
 		$stub_guzzle = $this->createMock(\GuzzleHttp\Client::class);
@@ -46,15 +46,8 @@ class HttpGatewayTest extends \PHPUnit\Framework\TestCase
 					->willReturn($stub_guzzle_response);
 		
 		$client = new \Nettools\SMS\Ovh\HttpGateway($stub_guzzle, $config);
-		$r = $g->send('my sms', 'TESTSENDER', ['+33601020304', '+33605060708'], true);
+		$r = $client->send('my sms', 'TESTSENDER', ['+33601020304', '+33605060708'], true);
 		$this->assertEquals(2, $r);
-		
-/*		$m = $mailer->getMailSender()->getSent();
-		$this->assertEquals(1, count($m));
-		
-		$subject = 'Subject: Account=my_service:Login=my_login:Password=my_pwd:From=TESTSENDER:NoStop=1:To=+33601020304,+33605060708';
-		$this->assertEquals(false, strpos($m[0], $subject) === false);
-		$this->assertEquals(false, strpos($m[0], 'my sms') === false);*/
 	}
 
 }
