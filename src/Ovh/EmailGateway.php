@@ -11,9 +11,9 @@ use \Nettools\SMS\SMSException;
 
 
 /**
- * Classe to send SMS through OVH Http request
+ * Classe to send SMS through OVH email request
  */
-class EmailGateway implements \Nettools\SMS\SMSGateway {
+class EmailGateway extends OldGateway {
 
 	protected $config;
 	protected $mailer;
@@ -23,6 +23,13 @@ class EmailGateway implements \Nettools\SMS\SMSGateway {
 	 * @var string Ovh email gateway address
 	 */
 	const EMAIL = 'email2sms@ovh.net';
+	
+	
+	/**
+	 * @var int Number of messages per batch for bulkSend
+	 */
+	const BATCH_SIZE = 10;
+	
 	
 	
 	/**
@@ -41,6 +48,18 @@ class EmailGateway implements \Nettools\SMS\SMSGateway {
 	{
 		$this->mailer = $mailer;
 		$this->config = $config;
+	}
+	
+	
+	
+	/**
+	 * Get batch size for bulkSend
+	 *
+	 * @return int
+	 */
+	function getBatchSize()
+	{
+		return self::BATCH_SIZE;
 	}
 	
 	
@@ -68,42 +87,6 @@ class EmailGateway implements \Nettools\SMS\SMSGateway {
 		else
 			return count($to);
 	}
-	
-	
-	
-	/**
-	 * Send SMS to a lot of recipients (this is more optimized that calling `send` with a big array of recipients)
-	 *
-	 * @param string $msg 
-	 * @param string $sender
-	 * @param string[] $to Big array of recipients, numbers in international format +xxyyyyyyyyyyyyy (ex. +33612345678)
-	 * @param bool $transactional True if message sent is transactional ; otherwise it's promotional)
-	 * @return int Returns the number of SMS sent (a multi-sms message count as as many message)
-	 */
-	function bulkSend($msg, $sender, array $to, $transactional = true)
-	{
-		// envoyer par paquets de 10 (longueur max du sujet)
-		if ( count($to) <= 10 )
-			return $this->send($msg, $sender, $to, $transactional);
-		else
-			return $this->bulkSend($msg, $sender, array_slice($to, 0, 10), $transactional) + $this->bulkSend($msg, $sender, array_slice($to, 10), $transactional);
-	}
-	
-	
-	
-	/**
-	 * Send SMS to a lot of recipients by downloading a CSV file
-	 *
-	 * @param string $msg 
-	 * @param string $sender
-	 * @param string $url Url of CSV file with recipients, numbers in international format +xxyyyyyyyyyyyyy (ex. +33612345678), first row is column headers (1 column title 'Number')
-	 * @param bool $transactional True if message sent is transactional ; otherwise it's promotional)
-	 * @return int Returns the number of SMS sent (a multi-sms message count as as many message)
-	 */
-	function bulkSendFromHttp($msg, $sender, $url, $transactional = true)
-	{
-		throw new SMSException('bulkSendFromHttp not implemented');
-	}
-}
+}	
 
 ?>

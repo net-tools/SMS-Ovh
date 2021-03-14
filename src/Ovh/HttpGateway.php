@@ -11,9 +11,9 @@ use \Nettools\SMS\SMSException;
 
 
 /**
- * Classe to send SMS through OVH Http request
+ * Class to send SMS through OVH Http request
  */
-class HttpGateway implements \Nettools\SMS\SMSGateway {
+class HttpGateway extends OldGateway {
 
 	protected $config;
 	
@@ -22,6 +22,21 @@ class HttpGateway implements \Nettools\SMS\SMSGateway {
 	 * @var string URL of OVH HTTP sms gateway
 	 */
 	const URL = 'https://www.ovh.com/cgi-bin/sms/http2sms.cgi';
+	
+	
+	
+	/**
+	 * @var int Number of messages per batch for bulkSend
+	 * - url max length : 2048, rounded to 2000
+	 * - sms max length : 918, rounded to 900 (https://support.textmagic.com/faq/maximum-length-of-a-text-message/)
+	 * - url length for mandatory parameters : 180
+	 * - characters available for numbers : 2000-180-918 = 902, rounded to 900
+	 * - one number : 13 to 15 digits, rounded to 15 
+	 * - a comma separates each number, so 1 number = 16 digits max
+	 * - max numbers / url : 900/16 = 56 numbers, rounded to 50
+	 */
+	const BATCH_SIZE = 50;
+	
 	
 	
 	
@@ -38,6 +53,18 @@ class HttpGateway implements \Nettools\SMS\SMSGateway {
 	public function __construct(AbstractConfig $config)
 	{
 		$this->config = $config;
+	}
+	
+	
+	
+	/**
+	 * Get batch size for bulkSend
+	 *
+	 * @return int
+	 */
+	function getBatchSize()
+	{
+		return self::BATCH_SIZE;
 	}
 	
 	
@@ -67,38 +94,6 @@ class HttpGateway implements \Nettools\SMS\SMSGateway {
 				throw new SMSException("Error {$json->status} when sending SMS : " . $json->message);
 		else
 			return "Unknown error when sending SMS : $ret";
-	}
-	
-	
-	
-	/**
-	 * Send SMS to a lot of recipients (this is more optimized that calling `send` with a big array of recipients)
-	 *
-	 * @param string $msg 
-	 * @param string $sender
-	 * @param string[] $to Big array of recipients, numbers in international format +xxyyyyyyyyyyyyy (ex. +33612345678)
-	 * @param bool $transactional True if message sent is transactional ; otherwise it's promotional)
-	 * @return int Returns the number of SMS sent (a multi-sms message count as as many message)
-	 */
-	function bulkSend($msg, $sender, array $to, $transactional = true)
-	{
-		return $this->send($msg, $sender, $to, $transactional);
-	}
-	
-	
-	
-	/**
-	 * Send SMS to a lot of recipients by downloading a CSV file
-	 *
-	 * @param string $msg 
-	 * @param string $sender
-	 * @param string $url Url of CSV file with recipients, numbers in international format +xxyyyyyyyyyyyyy (ex. +33612345678), first row is column headers (1 column title 'Number')
-	 * @param bool $transactional True if message sent is transactional ; otherwise it's promotional)
-	 * @return int Returns the number of SMS sent (a multi-sms message count as as many message)
-	 */
-	function bulkSendFromHttp($msg, $sender, $url, $transactional = true)
-	{
-		throw new SMSException('bulkSendFromHttp not implemented');
 	}
 }
 

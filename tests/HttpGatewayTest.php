@@ -3,7 +3,7 @@
 namespace Nettools\SMS\Ovh\Tests;
 
 
-
+/*
 class EmailGatewayTest extends \PHPUnit\Framework\TestCase
 {
     public function testGatewaySend()
@@ -24,10 +24,6 @@ class EmailGatewayTest extends \PHPUnit\Framework\TestCase
 		
 		$m = $mailer->getMailSender()->getSent();
 		$this->assertEquals(1, count($m));
-
-		/*
-		$subject = 'Account=' . $this->config->service . ':Login=' . $this->config->login . ':Password=' . $this->config->password;
-		$subject .= ':From=' . $sender . ':NoStop=' . ($transactional ? '1':'0') . ':To=' . implode(',', $to);*/
 		
 		$subject = 'Subject: Account=my_service:Login=my_login:Password=my_pwd:From=TESTSENDER:NoStop=1:To=+33601020304,+33605060708';
 		$this->assertEquals(false, strpos($m[0], $subject) === false);
@@ -65,7 +61,7 @@ class EmailGatewayTest extends \PHPUnit\Framework\TestCase
 	}
 }
 
-
+*/
 
 
 ?>
