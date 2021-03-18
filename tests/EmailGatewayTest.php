@@ -16,7 +16,7 @@ class EmailGatewayTest extends \PHPUnit\Framework\TestCase
 			]);
 		
 		
-		$mailer = new \Nettools\Mailing\Mailer(\Nettools\Mailing\MailSender::VIRTUAL);
+		$mailer = new \Nettools\Mailing\Mailer(new \Nettools\Mailing\MailSenders\Virtual());
 		
 		$g = new \Nettools\SMS\Ovh\EmailGateway($mailer, $config);
 		$r = $g->send('my sms', 'TESTSENDER', ['+33601020304', '+33605060708'], true);
@@ -46,7 +46,7 @@ class EmailGatewayTest extends \PHPUnit\Framework\TestCase
 			]);
 		
 		
-		$mailer = new \Nettools\Mailing\Mailer(\Nettools\Mailing\MailSender::VIRTUAL);
+		$mailer = new \Nettools\Mailing\Mailer(new \Nettools\Mailing\MailSenders\Virtual());
 		
 		$g = new \Nettools\SMS\Ovh\EmailGateway($mailer, $config);
 		$r = $g->bulkSend('my sms', 'TESTSENDER', ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20'], true);
