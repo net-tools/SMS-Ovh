@@ -82,10 +82,16 @@ class EmailGateway extends OldGateway {
 		$subject = 'Account=' . $this->config->service . ':Login=' . $this->config->login . ':Password=' . $this->config->password;
 		$subject .= ':From=' . $sender . ':NoStop=' . ($transactional ? '1':'0') . ':To=' . implode(',', $to);
 
-		if ( $ret = $this->mailer->sendmail($email, $this->config->emailSender, self::EMAIL, $subject) )
-			throw new SMSException('Error when sending SMS through OVH email gateway : ' . $ret);
-		else
+		try
+		{
+			$this->mailer->sendmail($email, $this->config->emailSender, self::EMAIL, $subject);
 			return count($to);
+		}
+		catch ( \Nettools\Mailing\Exception $e )
+		{
+			throw new SMSException('Error when sending SMS through OVH email gateway : ' . $e->getMessage());
+			
+		}		
 	}
 }	
 
