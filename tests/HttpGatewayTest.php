@@ -8,10 +8,7 @@ class HttpGatewayTest extends \PHPUnit\Framework\TestCase
 {
     static function toStream($str)
     {
-        $stream = fopen('php://memory','r+');
-        fwrite($stream, $str);
-        rewind($stream);
-        return $stream;
+         return \GuzzleHttp\Psr7\Utils::streamFor($str);
     }
     
     
