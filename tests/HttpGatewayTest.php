@@ -6,6 +6,15 @@ namespace Nettools\SMS\Ovh\Tests;
 
 class HttpGatewayTest extends \PHPUnit\Framework\TestCase
 {
+    static function toStream($str)
+    {
+        $stream = fopen('php://memory','r+');
+        fwrite($stream, $str);
+        rewind($stream);
+        return $stream;
+    }
+    
+    
     public function testGatewaySend()
     {
 		$config = new \Nettools\Core\Misc\ObjectConfig((object)[
@@ -19,7 +28,7 @@ class HttpGatewayTest extends \PHPUnit\Framework\TestCase
 		
 		$stub_guzzle_response = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
 		$stub_guzzle_response->method('getStatusCode')->willReturn(200);
-		$stub_guzzle_response->method('getBody')->willReturn('{"status":100,"smsIds":["290079169","290079170"],"creditLeft":"397.40"}');
+		$stub_guzzle_response->method('getBody')->willReturn(self::toStream('{"status":100,"smsIds":["290079169","290079170"],"creditLeft":"397.40"}'));
 				
 		// creating stub for guzzle client ; any of the request (GET, POST, PUT, DELETE) will return the guzzle response
 		$stub_guzzle = $this->createMock(\GuzzleHttp\Client::class);
