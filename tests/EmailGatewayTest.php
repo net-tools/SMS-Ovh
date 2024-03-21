@@ -59,7 +59,7 @@ class EmailGatewayTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(false, strpos($m[0], $subject) === false);
 		$this->assertEquals(false, strpos($m[0], 'my sms') === false);
 		
-		$subject = 'Subject: Account=my_service:Login=my_login:Password=my_pwd:From=TESTSENDER:NoStop=1:To=11,12,13,14,15,16,17,18,19,20';
+		$subject = 'Subject: ' . mb_encode_mimeheader('Account=my_service:Login=my_login:Password=my_pwd:From=TESTSENDER:NoStop=1:To=11,12,13,14,15,16,17,18,19,20');
 		$this->assertEquals(false, strpos($m[1], $subject) === false);
 		$this->assertEquals(false, strpos($m[1], 'my sms') === false);
 	}
