@@ -29,7 +29,7 @@ class EmailGatewayTest extends \PHPUnit\Framework\TestCase
 		$subject = 'Account=' . $this->config->service . ':Login=' . $this->config->login . ':Password=' . $this->config->password;
 		$subject .= ':From=' . $sender . ':NoStop=' . ($transactional ? '1':'0') . ':To=' . implode(',', $to);*/
 		
-		$subject = 'Subject: Account=my_service:Login=my_login:Password=my_pwd:From=TESTSENDER:NoStop=1:To=+33601020304,+33605060708';
+		$subject = 'Subject: ' . mb_encode_mimeheader('Account=my_service:Login=my_login:Password=my_pwd:From=TESTSENDER:NoStop=1:To=+33601020304,+33605060708');
 		$this->assertEquals(false, strpos($m[0], $subject) === false);
 		$this->assertEquals(false, strpos($m[0], 'my sms') === false);
 	}
@@ -55,7 +55,7 @@ class EmailGatewayTest extends \PHPUnit\Framework\TestCase
 		$m = $mailer->getMailSender()->getSent();
 		$this->assertEquals(2, count($m));
 
-		$subject = 'Subject: Account=my_service:Login=my_login:Password=my_pwd:From=TESTSENDER:NoStop=1:To=01,02,03,04,05,06,07,08,09,10';
+		$subject = 'Subject: ' . mb_encode_mimeheader('Account=my_service:Login=my_login:Password=my_pwd:From=TESTSENDER:NoStop=1:To=01,02,03,04,05,06,07,08,09,10');
 		$this->assertEquals(false, strpos($m[0], $subject) === false);
 		$this->assertEquals(false, strpos($m[0], 'my sms') === false);
 		
