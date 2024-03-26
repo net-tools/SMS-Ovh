@@ -22,7 +22,7 @@ class EmailGatewayTest extends \PHPUnit\Framework\TestCase
 		$r = $g->send('my sms', 'TESTSENDER', ['+33601020304', '+33605060708'], true);
 		$this->assertEquals(2, $r);
 		
-		$m = $mailer->getMailSender()->getSent();
+		$m = $mailer->getMailEngine()->getMailSender()->getSent();
 		$this->assertEquals(1, count($m));
 
 		/*
@@ -52,7 +52,7 @@ class EmailGatewayTest extends \PHPUnit\Framework\TestCase
 		$r = $g->bulkSend('my sms', 'TESTSENDER', ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20'], true);
 		$this->assertEquals(20, $r);
 		
-		$m = $mailer->getMailSender()->getSent();
+		$m = $mailer->getMailEngine()->getMailSender()->getSent();
 		$this->assertEquals(2, count($m));
 
 		$subject = 'Subject: ' . mb_encode_mimeheader('Account=my_service:Login=my_login:Password=my_pwd:From=TESTSENDER:NoStop=1:To=01,02,03,04,05,06,07,08,09,10');
